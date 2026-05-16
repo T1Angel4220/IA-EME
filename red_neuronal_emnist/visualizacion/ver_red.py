@@ -10,6 +10,8 @@ Opciones:
 Libreria usada: keras (parte de TensorFlow)
 """
 
+import os
+# pyrefly: ignore [missing-import]
 import numpy as np
 from tensorflow import keras
 

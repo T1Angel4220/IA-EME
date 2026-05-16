@@ -47,6 +47,7 @@ def construir_modelo(n_features):
     # --- CAPA 1: entrada + primera capa oculta ---
     # Solo la primera capa lleva input_shape (n_features=784)
     # relu: funcion mas usada, evita el vanishing gradient
+    # pyrefly: ignore [unexpected-keyword]
     model.add(layers.Dense(128, activation='relu', input_shape=(n_features,)))
 
     # --- CAPA 2: segunda capa oculta ---
