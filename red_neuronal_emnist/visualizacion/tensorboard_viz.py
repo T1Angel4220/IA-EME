@@ -13,7 +13,6 @@ Libreria usada: tensorflow.keras.callbacks (parte de TensorFlow)
 """
 
 from tensorflow.keras.callbacks import TensorBoard
-import os
 
 # IMPORTANTE: TensorFlow no soporta rutas con caracteres especiales (tildes, acentos)
 # Por eso usamos una ruta simple en C:\ sin acentos ni espacios
@@ -31,7 +30,7 @@ def obtener_callback_tensorboard():
         callback de TensorBoard listo para model.fit()
     """
     log_dir = LOG_DIR
-    os.makedirs(log_dir, exist_ok=True)
+    __import__('os').makedirs(log_dir, exist_ok=True)
 
     callback = TensorBoard(
         log_dir=log_dir,

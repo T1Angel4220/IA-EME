@@ -1,0 +1,539 @@
+\documentclass[12pt,a4paper]{article}
+\usepackage[utf8]{inputenc}
+\usepackage[spanish]{babel}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{graphicx}
+\usepackage{geometry}
+\usepackage{listings}
+\usepackage{xcolor}
+\usepackage{booktabs}
+\usepackage{hyperref}
+\usepackage{float}
+\usepackage{tikz}
+\usepackage{fancyhdr}
+\usepackage{setspace}
+
+\geometry{margin=2.5cm}
+\onehalfspacing
+
+% Estilo para codigo Python
+\definecolor{codegreen}{rgb}{0,0.6,0}
+\definecolor{codegray}{rgb}{0.5,0.5,0.5}
+\definecolor{codepurple}{rgb}{0.58,0,0.82}
+\definecolor{backcolour}{rgb}{0.95,0.95,0.92}
+
+\lstdefinestyle{pythonstyle}{
+    backgroundcolor=\color{backcolour},
+    commentstyle=\color{codegreen},
+    keywordstyle=\color{blue},
+    numberstyle=\tiny\color{codegray},
+    stringstyle=\color{codepurple},
+    basicstyle=\ttfamily\footnotesize,
+    breakatwhitespace=false,
+    breaklines=true,
+    captionpos=b,
+    keepspaces=true,
+    numbers=left,
+    numbersep=5pt,
+    showspaces=false,
+    showstringspaces=false,
+    showtabs=false,
+    tabsize=2,
+    language=Python
+}
+
+\pagestyle{fancy}
+\fancyhf{}
+\rhead{Red Neuronal Artificial -- EMNIST Digits}
+\lhead{Inteligencia Artificial}
+\cfoot{\thepage}
+
+\begin{document}
+
+%----------------------------------------------------------------
+% PORTADA
+%----------------------------------------------------------------
+\begin{titlepage}
+    \centering
+    \vspace*{1cm}
+    {\Large \textbf{UNIVERSIDAD TÉCNICA DE AMBATO}}\\[0.5cm]
+    {\large Facultad de Ingeniería en Sistemas, Electrónica e Industrial}\\[0.3cm]
+    {\large Carrera de Software}\\[2cm]
+
+    \rule{\linewidth}{0.5mm}\\[0.4cm]
+    {\LARGE \textbf{Red Neuronal Artificial (ANN)\\para Clasificación de Dígitos\\con Dataset EMNIST}}\\[0.4cm]
+    \rule{\linewidth}{0.5mm}\\[2cm]
+
+    {\large \textbf{Materia:} Inteligencia Artificial}\\[0.3cm]
+    {\large \textbf{Estudiante:} Angel Ayuquina}\\[0.3cm]
+    {\large \textbf{Fecha:} Mayo 2026}\\[3cm]
+
+    % [IMAGEN: Logo de la Universidad Técnica de Ambato]
+
+    \vfill
+\end{titlepage}
+
+%----------------------------------------------------------------
+% TABLA DE CONTENIDOS
+%----------------------------------------------------------------
+\tableofcontents
+\newpage
+
+%----------------------------------------------------------------
+% 1. INTRODUCCIÓN
+%----------------------------------------------------------------
+\section{Introducción}
+
+Las redes neuronales artificiales (ANN, por sus siglas en inglés \textit{Artificial Neural Networks}) constituyen uno de los pilares fundamentales del aprendizaje automático moderno. Inspiradas en el funcionamiento del cerebro humano, estas estructuras computacionales son capaces de aprender patrones complejos a partir de grandes volúmenes de datos.
+
+En el presente trabajo se implementa una red neuronal artificial multicapa utilizando el framework \textbf{TensorFlow/Keras} con el lenguaje de programación Python, siguiendo la metodología explicada en clase. El objetivo principal es entrenar la red para que \textbf{reconozca dígitos escritos a mano} (del 0 al 9) utilizando el dataset \textbf{EMNIST Digits}.
+
+\subsection{Objetivos}
+\begin{itemize}
+    \item Implementar una red neuronal artificial usando \texttt{keras.Sequential()}.
+    \item Aplicar los conceptos de función de activación, función de pérdida y optimizador Adam.
+    \item Entrenar el modelo con datos de entrenamiento durante 30 épocas.
+    \item Evaluar el modelo con datos de testeo y calcular el error de testeo.
+    \item Demostrar que el error de testeo cumple con el umbral establecido ($\leq 0.10$).
+\end{itemize}
+
+\subsection{Librerías utilizadas}
+Por indicación del docente, únicamente se utilizaron las siguientes librerías:
+\begin{itemize}
+    \item \textbf{NumPy}: manejo de arrays y cálculo del error de testeo.
+    \item \textbf{TensorFlow}: framework de aprendizaje profundo.
+    \item \textbf{Keras}: API de alto nivel para construir y entrenar la red neuronal.
+\end{itemize}
+
+%----------------------------------------------------------------
+% 2. MARCO TEÓRICO
+%----------------------------------------------------------------
+\section{Marco Teórico}
+
+\subsection{Red Neuronal Artificial}
+
+Una red neuronal artificial es un modelo computacional compuesto por capas de nodos (neuronas) interconectadas. Cada neurona recibe entradas, las pondera con pesos, aplica una función de activación y produce una salida. Matemáticamente, la operación de una neurona se expresa como:
+
+\begin{equation}
+    y = f\left(\sum_{i=1}^{n} w_i x_i + b\right)
+\end{equation}
+
+donde:
+\begin{itemize}
+    \item $x_i$ son las entradas
+    \item $w_i$ son los pesos sinápticos
+    \item $b$ es el sesgo (\textit{bias})
+    \item $f(\cdot)$ es la función de activación
+    \item $y$ es la salida de la neurona
+\end{itemize}
+
+\subsection{Modelo Secuencial (keras.Sequential)}
+
+El modelo \texttt{keras.Sequential} permite construir redes neuronales capa por capa de forma lineal. Cada capa recibe como entrada la salida de la capa anterior. Solo la primera capa requiere el parámetro \texttt{input\_shape}, que define el número de características (columnas) del dataset de entrada.
+
+\subsection{Funciones de Activación}
+
+Las funciones de activación introducen no linealidad en la red, permitiendo aprender patrones complejos. Las utilizadas en este proyecto son:
+
+\subsubsection{ReLU (Rectified Linear Unit)}
+\begin{equation}
+    f(x) = \max(0, x)
+\end{equation}
+Es la función más utilizada en capas ocultas. Resuelve el problema del \textit{vanishing gradient} (desvanecimiento de gradientes) ya que su derivada es constante para valores positivos. Como explicó el docente: \textit{"los pesos entre 0 y 1 son tan pequeñitos que ya no aprenden nada, entonces ahí se utiliza un arreglo"} -- ese arreglo es precisamente ReLU.
+
+% [IMAGEN: Gráfica de la función ReLU mostrando f(x)=0 para x<0 y f(x)=x para x>=0]
+
+\subsubsection{Tanh (Tangente Hiperbólica)}
+\begin{equation}
+    f(x) = \frac{e^x - e^{-x}}{e^x + e^{-x}}
+\end{equation}
+Produce salidas en el rango $[-1, 1]$. El docente indicó que \textit{"cada capa puede tener una distinta"} función de activación, lo que justifica su uso en la tercera capa oculta.
+
+\subsubsection{Sigmoid}
+\begin{equation}
+    f(x) = \frac{1}{1 + e^{-x}}
+\end{equation}
+Produce salidas en el rango $(0, 1)$. Se utiliza en la cuarta capa oculta, demostrando el concepto de activaciones distintas por capa.
+
+\subsubsection{Softmax}
+\begin{equation}
+    f(x_i) = \frac{e^{x_i}}{\sum_{j=1}^{K} e^{x_j}}
+\end{equation}
+Convierte las salidas en probabilidades que suman 1. Se utiliza \textbf{exclusivamente en la capa de salida} para clasificación multiclase (10 dígitos). La neurona con mayor probabilidad determina el dígito predicho.
+
+\subsection{Función de Pérdida: Entropía Cruzada}
+
+Para problemas de clasificación multiclase se utiliza la \textbf{entropía cruzada categórica dispersa} (\textit{sparse categorical crossentropy}):
+
+\begin{equation}
+    \mathcal{L} = -\sum_{i=1}^{N} \log\left(\hat{p}_{i,y_i}\right)
+\end{equation}
+
+donde $\hat{p}_{i,y_i}$ es la probabilidad predicha para la clase verdadera $y_i$ de la muestra $i$. El objetivo del entrenamiento es \textbf{minimizar} esta función de pérdida.
+
+\subsection{Optimizador Adam}
+
+Adam (\textit{Adaptive Moment Estimation}) es un algoritmo de optimización basado en el descenso del gradiente estocástico. Como explicó el docente con la analogía de la montaña:
+
+\begin{quote}
+\textit{"Me dejan en cualquier parte de la montaña con los ojos vendados y me dicen: desciende a lo más bajo. Al inicio puedo dar saltos grandes; cuando está llegando al mínimo global, da saltos pequeños."}
+\end{quote}
+
+Adam actualiza los pesos mediante:
+
+\begin{equation}
+    w_{t+1} = w_t - \frac{\alpha}{\sqrt{\hat{v}_t} + \epsilon} \cdot \hat{m}_t
+\end{equation}
+
+donde $\hat{m}_t$ es el primer momento (media del gradiente), $\hat{v}_t$ es el segundo momento (varianza del gradiente) y $\alpha$ es la tasa de aprendizaje.
+
+\subsection{Retropropagación del Error}
+
+Durante el entrenamiento, el error se propaga hacia atrás a través de la red para actualizar los pesos:
+
+\begin{equation}
+    \frac{\partial \mathcal{L}}{\partial w_{ij}} = \frac{\partial \mathcal{L}}{\partial a_j} \cdot \frac{\partial a_j}{\partial z_j} \cdot \frac{\partial z_j}{\partial w_{ij}}
+\end{equation}
+
+Este proceso se repite en cada época de entrenamiento.
+
+%----------------------------------------------------------------
+% 3. DATASET EMNIST DIGITS
+%----------------------------------------------------------------
+\section{Dataset: EMNIST Digits}
+
+\subsection{Descripción}
+
+El dataset \textbf{EMNIST Digits} (\textit{Extended Modified National Institute of Standards and Technology}) es una extensión del famoso dataset MNIST, diseñado para el reconocimiento de dígitos escritos a mano.
+
+% [IMAGEN: Ejemplos de imágenes del dataset EMNIST Digits mostrando dígitos del 0 al 9]
+
+\subsection{Características del dataset}
+
+\begin{table}[H]
+    \centering
+    \begin{tabular}{@{}ll@{}}
+        \toprule
+        \textbf{Característica} & \textbf{Valor} \\
+        \midrule
+        Tipo de datos & Imágenes en escala de grises \\
+        Tamaño de cada imagen & 28 × 28 píxeles \\
+        Número de características (n\_features) & 784 píxeles por imagen \\
+        Clases & 10 (dígitos del 0 al 9) \\
+        Muestras de entrenamiento & 240,000 \\
+        Muestras de testeo & 40,000 \\
+        Formato & CSV (columna 0: etiqueta, columnas 1-784: píxeles) \\
+        \bottomrule
+    \end{tabular}
+    \caption{Características del dataset EMNIST Digits}
+\end{table}
+
+\subsection{Preprocesamiento}
+
+\subsubsection{Separación de etiquetas y características}
+Cada fila del CSV contiene 785 valores: la primera columna es la etiqueta (dígito real 0-9) y las 784 columnas restantes son los valores de píxeles.
+
+\begin{lstlisting}[style=pythonstyle, caption=Carga y separación del dataset]
+datos_train = np.loadtxt(RUTA_TRAIN, delimiter=',', dtype='float32')
+
+y_train = datos_train[:, 0].astype(int)   # etiquetas
+X_train = datos_train[:, 1:].astype('float32')  # pixeles
+
+n_features = X_train.shape[1]  # = 784
+\end{lstlisting}
+
+\subsubsection{Normalización}
+Los valores de píxeles originalmente están en el rango $[0, 255]$. Se normalizan al rango $[0.0, 1.0]$ dividiendo entre 255:
+
+\begin{equation}
+    X_{norm} = \frac{X}{255}
+\end{equation}
+
+\begin{lstlisting}[style=pythonstyle, caption=Normalización de píxeles]
+X_train = X_train / 255.0
+X_test  = X_test  / 255.0
+\end{lstlisting}
+
+Esta normalización mejora la convergencia del descenso del gradiente al mantener los valores de entrada en una escala pequeña y uniforme.
+
+%----------------------------------------------------------------
+% 4. ARQUITECTURA DE LA RED NEURONAL
+%----------------------------------------------------------------
+\section{Arquitectura de la Red Neuronal}
+
+\subsection{Diseño de la arquitectura}
+
+La red neuronal se construye usando \texttt{keras.Sequential()}, instanciado en una variable llamada \texttt{model}. La arquitectura diseñada demuestra el concepto explicado por el docente: \textit{"cada capa puede tener una función de activación distinta"}.
+
+\begin{table}[H]
+    \centering
+    \begin{tabular}{@{}ccccc@{}}
+        \toprule
+        \textbf{Capa} & \textbf{Tipo} & \textbf{Neuronas} & \textbf{Activación} & \textbf{Parámetros} \\
+        \midrule
+        Entrada & -- & 784 & -- & -- \\
+        Oculta 1 & Dense & 128 & ReLU & $784 \times 128 + 128 = 100,480$ \\
+        Oculta 2 & Dense & 64 & ReLU & $128 \times 64 + 64 = 8,256$ \\
+        Oculta 3 & Dense & 32 & Tanh & $64 \times 32 + 32 = 2,080$ \\
+        Oculta 4 & Dense & 16 & Sigmoid & $32 \times 16 + 16 = 528$ \\
+        Salida & Dense & 10 & Softmax & $16 \times 10 + 10 = 170$ \\
+        \midrule
+        \multicolumn{4}{l}{\textbf{Total de parámetros entrenables}} & \textbf{111,514} \\
+        \bottomrule
+    \end{tabular}
+    \caption{Arquitectura de la red neuronal}
+\end{table}
+
+\subsection{Cálculo de parámetros}
+
+El número de parámetros de cada capa densa se calcula como:
+\begin{equation}
+    \text{Parámetros} = (\text{entradas} \times \text{neuronas}) + \text{neuronas (bias)}
+\end{equation}
+
+Por ejemplo, para la primera capa oculta:
+\begin{equation}
+    \text{Parámetros}_1 = (784 \times 128) + 128 = 100{,}352 + 128 = 100{,}480
+\end{equation}
+
+% [IMAGEN: Diagrama de la arquitectura de la red neuronal mostrando las 5 capas con sus neuronas y activaciones, generado por keras.utils.plot_model o TensorBoard GRAPHS]
+
+\subsection{Código de la arquitectura}
+
+\begin{lstlisting}[style=pythonstyle, caption=Construcción del modelo con keras.Sequential]
+model = keras.Sequential()
+
+# Solo la primera capa lleva input_shape (n_features=784)
+model.add(layers.Dense(128, activation='relu', input_shape=(n_features,)))
+
+# Cada capa puede tener distinta activacion (como explico el profesor)
+model.add(layers.Dense(64,  activation='relu'))
+model.add(layers.Dense(32,  activation='tanh'))
+model.add(layers.Dense(16,  activation='sigmoid'))
+
+# Salida: 10 neuronas (una por digito 0-9), softmax para probabilidades
+model.add(layers.Dense(10, activation='softmax'))
+\end{lstlisting}
+
+%----------------------------------------------------------------
+% 5. COMPILACIÓN Y ENTRENAMIENTO
+%----------------------------------------------------------------
+\section{Compilación y Entrenamiento del Modelo}
+
+\subsection{Compilación}
+
+Una vez definida la arquitectura, el modelo se compila con \texttt{model.compile()}:
+
+\begin{lstlisting}[style=pythonstyle, caption=Compilación del modelo]
+model.compile(
+    loss='sparse_categorical_crossentropy',
+    optimizer='adam',
+    metrics=['accuracy']
+)
+\end{lstlisting}
+
+Los tres parámetros clave son:
+\begin{itemize}
+    \item \textbf{loss}: función de pérdida -- entropía cruzada categórica.
+    \item \textbf{optimizer}: Adam, que gestiona la tasa de aprendizaje adaptativamente.
+    \item \textbf{metrics}: exactitud (\textit{accuracy}) para monitorear el entrenamiento.
+\end{itemize}
+
+El \textbf{error de testeo} se obtiene como:
+\begin{equation}
+    \text{error} = 1 - \text{exactitud}
+\end{equation}
+
+\subsection{Entrenamiento}
+
+El entrenamiento se ejecuta con \texttt{model.fit()} durante \textbf{30 épocas}, como indicó el docente:
+
+\begin{lstlisting}[style=pythonstyle, caption=Entrenamiento del modelo]
+historial = model.fit(
+    X_train,
+    y_train,
+    epochs=30,
+    batch_size=64,
+    verbose=1
+)
+\end{lstlisting}
+
+\subsection{Evolución del entrenamiento}
+
+La siguiente tabla muestra la exactitud obtenida en cada época durante el entrenamiento:
+
+\begin{table}[H]
+    \centering
+    \begin{tabular}{@{}cccc@{}}
+        \toprule
+        \textbf{Época} & \textbf{Accuracy} & \textbf{Época} & \textbf{Accuracy} \\
+        \midrule
+        1  & 89.68\% & 16 & 98.01\% \\
+        2  & 95.83\% & 17 & 98.06\% \\
+        3  & 96.57\% & 18 & 98.08\% \\
+        4  & 96.98\% & 19 & 98.12\% \\
+        5  & 97.20\% & 20 & 98.11\% \\
+        6  & 97.37\% & 21 & 98.17\% \\
+        7  & 97.52\% & 22 & 98.18\% \\
+        8  & 97.63\% & 23 & 98.19\% \\
+        9  & 97.71\% & 24 & 98.22\% \\
+        10 & 97.76\% & 25 & 98.24\% \\
+        11 & 97.80\% & 26 & 98.24\% \\
+        12 & 97.85\% & 27 & 98.25\% \\
+        13 & 97.92\% & 28 & 98.27\% \\
+        14 & 97.96\% & 29 & 98.29\% \\
+        15 & 98.00\% & 30 & 98.30\% \\
+        \bottomrule
+    \end{tabular}
+    \caption{Exactitud del modelo por época durante el entrenamiento}
+\end{table}
+
+% [IMAGEN: Gráfica de TensorBoard mostrando la curva epoch_accuracy subiendo de 89.68% a 98.30% a lo largo de las 30 épocas. Captura de pantalla de la pestaña SCALARS en http://localhost:6006]
+
+% [IMAGEN: Gráfica de TensorBoard mostrando la curva epoch_loss bajando a lo largo de las 30 épocas, demostrando la convergencia del modelo]
+
+\textbf{Observación}: En la época 1 la exactitud comienza en 89.68\%, evidenciando que el modelo inicia con pesos aleatorios. A partir de la época 5 supera el 97\% y converge progresivamente hacia 98.30\% en la época 30.
+
+%----------------------------------------------------------------
+% 6. EVALUACIÓN CON DATOS DE TESTEO
+%----------------------------------------------------------------
+\section{Evaluación con Datos de Testeo}
+
+\subsection{Proceso de predicción}
+
+Como explicó el docente, las etiquetas de testeo (\texttt{y\_test}) se guardan aparte desde el inicio y \textbf{no se utilizan durante el entrenamiento}. Tras el entrenamiento, se ejecuta \texttt{model.predict()} exclusivamente con \texttt{X\_test}:
+
+\begin{lstlisting}[style=pythonstyle, caption=Predicción y evaluación con datos de testeo]
+# Guardar y_test aparte (etiquetas verdaderas)
+y_verdaderas = y_test
+
+# model.predict() SOLO con X_test
+y_pred_probabilidades = model.predict(X_test)
+
+# La neurona con mayor probabilidad = clase predicha
+y_predichas = np.argmax(y_pred_probabilidades, axis=1)
+
+# Calcular error de testeo
+correctas        = np.sum(y_predichas == y_verdaderas)
+total            = len(y_verdaderas)
+exactitud_testeo = correctas / total
+error_testeo     = 1 - exactitud_testeo
+\end{lstlisting}
+
+\subsection{Resultados obtenidos}
+
+\begin{table}[H]
+    \centering
+    \begin{tabular}{@{}ll@{}}
+        \toprule
+        \textbf{Métrica} & \textbf{Valor} \\
+        \midrule
+        Total de muestras de testeo & 40,000 \\
+        Predicciones correctas & 39,049 \\
+        Exactitud de testeo & 97.62\% \\
+        Error de testeo & 0.0238 \\
+        Umbral máximo de error (docente) & 0.10 \\
+        \midrule
+        \textbf{Veredicto} & \textbf{Arquitectura ADECUADA} \\
+        \bottomrule
+    \end{tabular}
+    \caption{Resultados de la evaluación con datos de testeo}
+\end{table}
+
+\subsection{Verificación del umbral}
+
+El docente estableció que el error de testeo \textbf{no debe ser mayor a 0.10}. El modelo obtuvo:
+
+\begin{equation}
+    \text{error\_testeo} = 1 - 0.9762 = 0.0238 \leq 0.10 \quad \checkmark
+\end{equation}
+
+Esto confirma que la arquitectura diseñada es \textbf{adecuada} para la tarea de clasificación de dígitos.
+
+\subsection{Comparación: entrenamiento vs testeo}
+
+\begin{table}[H]
+    \centering
+    \begin{tabular}{@{}lcc@{}}
+        \toprule
+        \textbf{Conjunto} & \textbf{Exactitud} & \textbf{Error} \\
+        \midrule
+        Entrenamiento (época 30) & 98.30\% & 0.0170 \\
+        Testeo & 97.62\% & 0.0238 \\
+        \midrule
+        Diferencia & 0.68\% & 0.0068 \\
+        \bottomrule
+    \end{tabular}
+    \caption{Comparación de exactitud entre entrenamiento y testeo}
+\end{table}
+
+La diferencia mínima entre entrenamiento (98.30\%) y testeo (97.62\%) indica que el modelo \textbf{generaliza bien} y no presenta sobreajuste significativo (\textit{overfitting}).
+
+%----------------------------------------------------------------
+% 7. ESTRUCTURA DEL PROYECTO
+%----------------------------------------------------------------
+\section{Estructura del Proyecto}
+
+El proyecto se organizó en carpetas separadas, cada una con una responsabilidad específica:
+
+\begin{lstlisting}[language=bash, caption=Estructura de carpetas del proyecto]
+red_neuronal_emnist/
+|
+|-- main.py                    <- Punto de entrada principal
+|
+|-- datos/
+|   |-- cargar_datos.py        <- Carga CSV y normaliza pixeles
+|
+|-- modelo/
+|   |-- arquitectura.py        <- keras.Sequential + model.add()
+|   |-- compilar.py            <- model.compile() + model.summary()
+|   |-- entrenar.py            <- model.fit() con 30 epocas
+|
+|-- evaluacion/
+|   |-- testeo.py              <- model.predict() + error de testeo
+|
+|-- visualizacion/
+|   |-- tensorboard_viz.py     <- TensorBoard para graficas
+|   |-- ver_red.py             <- Diagrama de la arquitectura
+\end{lstlisting}
+
+% [IMAGEN: Captura de pantalla de VS Code mostrando la estructura de carpetas del proyecto en el explorador de archivos]
+
+%----------------------------------------------------------------
+% 8. CONCLUSIONES
+%----------------------------------------------------------------
+\section{Conclusiones}
+
+\begin{enumerate}
+    \item Se implementó exitosamente una red neuronal artificial multicapa usando \texttt{keras.Sequential()} siguiendo exactamente la metodología explicada por el docente.
+
+    \item La arquitectura con capas de activaciones distintas (ReLU, Tanh, Sigmoid, Softmax) demostró el concepto impartido en clase: \textit{"cada capa puede tener una función de activación distinta"}.
+
+    \item El modelo alcanzó una \textbf{exactitud de testeo del 97.62\%} con un \textbf{error de 0.0238}, ampliamente por debajo del umbral máximo de 0.10 establecido por el docente.
+
+    \item El optimizador Adam gestionó eficientemente la tasa de aprendizaje durante el descenso del gradiente, permitiendo que el modelo convergiera en 30 épocas.
+
+    \item La normalización de píxeles al rango $[0, 1]$ fue fundamental para acelerar la convergencia del entrenamiento.
+
+    \item La diferencia mínima entre la exactitud de entrenamiento (98.30\%) y testeo (97.62\%) indica que el modelo generaliza correctamente sin sobreajuste significativo.
+\end{enumerate}
+
+%----------------------------------------------------------------
+% 9. REFERENCIAS
+%----------------------------------------------------------------
+\section{Referencias}
+
+\begin{itemize}
+    \item Cohen, G., Afshar, S., Tapson, J., \& van Schaik, A. (2017). EMNIST: an extension of MNIST to handwritten letters. \textit{arXiv preprint arXiv:1702.05373}.
+
+    \item Chollet, F. (2021). \textit{Deep Learning with Python} (2nd ed.). Manning Publications.
+
+    \item TensorFlow Development Team. (2024). \textit{TensorFlow 2.x Documentation}. Recuperado de \url{https://www.tensorflow.org/}
+
+    \item Keras Development Team. (2024). \textit{Keras Documentation}. Recuperado de \url{https://keras.io/}
+
+    \item Goodfellow, I., Bengio, Y., \& Courville, A. (2016). \textit{Deep Learning}. MIT Press.
+\end{itemize}
+
+\end{document}

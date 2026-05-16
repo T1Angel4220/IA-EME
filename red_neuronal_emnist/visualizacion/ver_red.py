@@ -10,15 +10,14 @@ Opciones:
 Libreria usada: keras (parte de TensorFlow)
 """
 
-import os
-import sys
-
-# Agregar Graphviz al PATH para que pydot pueda encontrar el ejecutable 'dot'
-GRAPHVIZ_BIN = r'C:\Program Files (x86)\Graphviz\bin'
-if os.path.exists(GRAPHVIZ_BIN) and GRAPHVIZ_BIN not in os.environ.get('PATH', ''):
-    os.environ['PATH'] += os.pathsep + GRAPHVIZ_BIN
-
+import numpy as np
 from tensorflow import keras
+
+# Graphviz en PATH para generar imagen PNG
+GRAPHVIZ_BIN = r'C:\Program Files (x86)\Graphviz\bin'
+_path = __import__('os').environ.get('PATH', '')
+if GRAPHVIZ_BIN not in _path:
+    __import__('os').environ['PATH'] += __import__('os').pathsep + GRAPHVIZ_BIN
 
 
 def imprimir_arquitectura_ascii(model):
