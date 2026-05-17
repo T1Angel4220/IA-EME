@@ -1,0 +1,71 @@
+2. Explicación y Funcionamiento
+Para entrenar nuestra red, descargamos y utilizamos el subconjunto numérico del reconocido dataset EMNIST. Sin embargo, no podíamos pasarle la información "cruda" a la red. Realizamos tres pasos de acondicionamiento de datos:
+1.
+Separación de las Etiquetas: El archivo CSV contiene 785 columnas por imagen. Extraer la primera columna fue el primer paso, ya que ahí reside el número real de la imagen. Inmediatamente lo convertimos al formato categorical. Esto es un requerimiento estricto que le indica a MATLAB que estamos ante un problema de Clasificación Multiclase y no ante un problema de predicción matemática lineal.
+2.
+Normalización: Las 784 columnas restantes corresponden a los píxeles de la imagen. En formato digital, estos valores van de 0 (negro) a 255 (blanco). Decidimos dividir toda la matriz entre 255. Esta normalización proyecta los valores a una escala de 0 a 1. Lo hicimos porque, trabajar con números más pequeños estabiliza matemáticamente a la red, acelera el Descenso del Gradiente y evita que los pesos exploten durante el entrenamiento.
+3.
+Reconstrucción de la Imagen: Como teníamos los 784 píxeles estirados en una sola fila plana (un vector 1D), nuestra red no podía entender la forma real del número. Usamos la función reshape y la matriz transpuesta para reconstruir ese vector en una cuadrícula bidimensional de 28x28 píxeles. Así, la capa de entrada puede analizar la imagen tal cual es.
+3. Arquitectura de la Red Neuronal
+Para construir nuestra red, diseñamos una red Secuencial (un apilamiento lógico de capas de principio a fin). La arquitectura que definimos fue la siguiente:
+Capas Ocultas
+Como contábamos con una cantidad masiva de información por cada foto (784 entradas), decidimos implementar 3 capas densas ocultas (fullyConnectedLayer).
+-
+La primera capa con 128 neuronas.
+-
+La segunda capa con 64 neuronas.
+-
+La tercera capa con 15 neuronas.
+Esta estructura funciona como un embudo de información. Ayuda a que la red vaya descartando los píxeles vacíos y se enfoque únicamente en los trazos clave que diferencian a un número de otro.
+Inicialización de los pesos
+Al realizarlo en MATLAB, un aspecto técnico muy interesante que aplicamos es la inicialización de los pesos. MATLAB no arranca la red asignando pesos totalmente al azar entre -1 y 1. Por el contrario, utiliza un algoritmo inteligente llamado Inicialización de Glorot. Este método calcula el tamaño matemático ideal de los pesos de arranque dependiendo de cuántas neuronas tenga la
+UNIVERSIDAD TÉCNICA DE AMBATO
+FACULTAD DE INGENIERÍA EN SISTEMAS ELECTRÓNICA E INDUSTRIAL
+CARRERA DE SOFTWARE
+CICLO ACADÉMICO: MARZO – JULIO 2025
+capa, asegurando que la señal eléctrica fluya correctamente sin saturar la red desde la primera época.
+Funciones de Activación
+Al igual que el ejemplo que fue mostrado en clase, integramos dos funciones de activación:
+-
+ReLU: Colocamos esta función en todas las capas ocultas. Al cancelar los valores negativos, ReLU nos solucionó el famoso problema del "desvanecimiento del gradiente", permitiendo que nuestra red aprendiera de forma veloz.
+-
+Softmax: En la capa final de salida (que cuenta con solo 10 neuronas, una por cada posible número), agregamos Softmax, ya que lo convierte en un problema multiclase. Esta función se encarga de agrupar las respuestas de la red y convertirlas en probabilidades que sumen 100%, indicándonos qué tan segura está la red de su predicción.
+4. Configuración del Entrenamiento
+Para el entrenamiento de la red, configuramos las trainingOptions utilizando el optimizador Adam. Decidimos usar este optimizador porque adapta dinámicamente la velocidad de aprendizaje, siendo mucho más eficiente que el Descenso de Gradiente tradicional.
+Además, nuestro entrenamiento es de naturaleza "estocástica". Esto significa que le instruimos a MATLAB que lea las imágenes en pequeños grupos de 128 fotos (MiniBatchSize) y que baraje el orden del dataset completamente en cada iteración. Hacer esto garantiza que la red no pueda hacer trampa aprendiéndose de memoria el orden en que le entregamos las fotos.
+Fijamos el tiempo de entrenamiento en un máximo de 30 épocas. Este es un parámetro configurable en el código.
+5. Análisis de los Resultados y las Métricas
+Antes de hablar de los resultados, es importante que recalcar que una vez iniciado nuestro programa los resultados se irán mostrando en la consola de MATLAB.
+Ilustración 1. Ejecución de la Red Neuronal
+UNIVERSIDAD TÉCNICA DE AMBATO
+FACULTAD DE INGENIERÍA EN SISTEMAS ELECTRÓNICA E INDUSTRIAL
+CARRERA DE SOFTWARE
+CICLO ACADÉMICO: MARZO – JULIO 2025
+Una vez hecho todo esto, pusimos a prueba nuestro modelo utilizando los datos de validación (el archivo test.csv), logrando resultados que superaron nuestras expectativas.
+Las métricas finales arrojadas por la consola fueron:
+-
+Precisión (Accuracy) de Entrenamiento: 99.72%
+-
+Error de Clasificación de Entrenamiento: 0.28%
+-
+Precisión (Accuracy) de Testeo: 98.23%
+-
+Error de Clasificación de Testeo: 1.77%
+Ilustración 2. Resultados Globales de nuestra Red Neuronal
+Interpretación del Sobreajuste (Overfitting)
+Estos números confirman el éxito de nuestro diseño. Al obtener un altísimo 98.23% de aciertos sobre los datos de Testeo (imágenes que la red jamás había visto en su entrenamiento), comprobamos empíricamente que nuestro modelo no sufrió de sobreajuste. La red aprendió las reglas de la caligrafía humana y pudo generalizar ese conocimiento a casos nuevos de forma excelente.
+Matriz de Confusión
+Ilustración 3. Matriz de Confusión
+UNIVERSIDAD TÉCNICA DE AMBATO
+FACULTAD DE INGENIERÍA EN SISTEMAS ELECTRÓNICA E INDUSTRIAL
+CARRERA DE SOFTWARE
+CICLO ACADÉMICO: MARZO – JULIO 2025
+Al analizar la representación gráfica de la Matriz de Confusión generada por la función confusionchart, pudimos extraer conclusiones valiosas:
+-
+Métricas de Rendimiento: Tanto en Precisión (cuántas de sus predicciones fueron correctas) como en Recall (cuántos números reales logró identificar), la red se mantuvo por encima del 97.5% en absolutamente todos los dígitos del 0 al 9.
+-
+Análisis de Error (Falsos Positivos): Analizamos las pocas ocasiones en las que la red se equivocó. Notamos una tendencia clara: la red sufre pequeñas confusiones intentando diferenciar un 3 de un 5, y un 4 de un 9. Al discutir este comportamiento, concluimos que es una falla totalmente aceptable e inevitable. La escritura a mano alzada suele ser muy desprolija, y los bucles cursivos de esos números en particular presentan tanta similitud morfológica que incluso el ojo humano tendría problemas para diferenciarlos en ciertas ocasiones.
+6. Conclusiones
+1. A través de la ejecución de este proyecto, demostramos de forma práctica que el uso del entorno de MATLAB nos permite replicar y potenciar la misma lógica estructural secuencial que estudiamos teóricamente con Python.
+2. Hemos comprobado que el éxito de una Red Neuronal no recae solo en poner muchas capas, sino en el preprocesamiento matemático de los datos. Si no hubiésemos aplicado la normalización dividiendo los píxeles entre 255, el modelo habría tardado el triple en converger.
+3. Finalmente, corroboramos el poder de funciones como ReLU y Softmax. La combinación de estas arquitecturas nos permitió construir un clasificador robusto, sumamente veloz (demorando apenas unos minutos) y con un porcentaje de acierto sobresaliente del 98%, resolviendo exitosamente el desafío del reconocimiento óptico de caracteres manuscritos

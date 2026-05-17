@@ -25,6 +25,7 @@ Librerias usadas: tensorflow, keras
 
 from tensorflow import keras
 from tensorflow.keras import layers
+from config import CAPAS_OCULTAS, N_SALIDA, ACTIVACION_SALIDA
 
 
 def construir_modelo(n_features):
@@ -44,36 +45,26 @@ def construir_modelo(n_features):
     # Instanciar el modelo secuencial - como el profesor
     model = keras.Sequential()
 
-    # --- CAPA 1: entrada + primera capa oculta ---
-    # Solo la primera capa lleva input_shape (n_features=784)
-    # relu: funcion mas usada, evita el vanishing gradient
-    # pyrefly: ignore [unexpected-keyword]
-    model.add(layers.Dense(128, activation='relu', input_shape=(n_features,)))
+    # --- CAPAS OCULTAS (definidas en config.py) ---
+    # La primera capa lleva input_shape, las demas no
+    # Bucle: agrega/quita capas desde config.py sin tocar este archivo
+    for i, (neuronas, activacion) in enumerate(CAPAS_OCULTAS):
+        if i == 0:
+            # pyrefly: ignore [unexpected-keyword]
+            model.add(layers.Dense(neuronas, activation=activacion,
+                                   # pyrefly: ignore [unexpected-keyword]
+                                   input_shape=(n_features,)))
+            print(f"Entrada   : {n_features} variables (pixeles 28x28)")
+        else:
+            model.add(layers.Dense(neuronas, activation=activacion))
 
-    # --- CAPA 2: segunda capa oculta ---
-    # relu: sigue extrayendo caracteristicas sin perder gradiente
-    model.add(layers.Dense(64, activation='relu'))
+        # Nota sobre vanishing gradient:
+        # tanh/sigmoid con pocas capas (<10) no causan problema
+        nota = "" if activacion == 'relu' else " (ok con pocas capas)"
+        print(f"Oculta {i+1:2d}  : {neuronas:3d} neuronas | act: {activacion}{nota}")
 
-    # --- CAPA 3: tercera capa oculta ---
-    # tanh: el profesor dijo que CADA CAPA PUEDE TENER DISTINTA ACTIVACION
-    # tanh da salidas entre -1 y 1, util para capas intermedias
-    model.add(layers.Dense(32, activation='tanh'))
-
-    # --- CAPA 4: cuarta capa oculta ---
-    # sigmoid: otra activacion distinta, salida entre 0 y 1
-    model.add(layers.Dense(16, activation='sigmoid'))
-
-    # --- CAPA DE SALIDA ---
-    # 10 neuronas = 10 digitos posibles (0 al 9)
-    # softmax: convierte las 10 salidas en probabilidades (suman = 1)
-    # SOLO se usa softmax en la salida, NO en capas ocultas
-    model.add(layers.Dense(10, activation='softmax'))
-
-    print(f"\nEntrada   : {n_features} variables (pixeles 28x28)")
-    print("Oculta 1  : 128 neuronas | activacion: relu    (evita vanishing gradient)")
-    print("Oculta 2  :  64 neuronas | activacion: relu    (extraccion de caracteristicas)")
-    print("Oculta 3  :  32 neuronas | activacion: tanh    (activacion distinta - prof.)")
-    print("Oculta 4  :  16 neuronas | activacion: sigmoid (activacion distinta - prof.)")
-    print("Salida    :  10 neuronas | activacion: softmax (digitos 0-9, suma prob.= 1)")
+    # --- CAPA DE SALIDA (siempre softmax para 10 clases) ---
+    model.add(layers.Dense(N_SALIDA, activation=ACTIVACION_SALIDA))
+    print(f"Salida    : {N_SALIDA:3d} neuronas | act: {ACTIVACION_SALIDA} (probabilidades 0-9)")
 
     return model
