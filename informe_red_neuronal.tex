@@ -207,7 +207,11 @@ Este proceso se repite en cada época de entrenamiento.
 
 El dataset \textbf{EMNIST Digits} (\textit{Extended Modified National Institute of Standards and Technology}) es una extensión del famoso dataset MNIST, diseñado para el reconocimiento de dígitos escritos a mano.
 
-% [IMAGEN: Ejemplos de imágenes del dataset EMNIST Digits mostrando dígitos del 0 al 9]
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.9\textwidth]{CargaDataset.png}
+    \caption{Carga y preprocesamiento del dataset EMNIST}
+\end{figure}
 
 \subsection{Características del dataset}
 
@@ -297,7 +301,17 @@ Por ejemplo, para la primera capa oculta:
     \text{Parámetros}_1 = (784 \times 128) + 128 = 100{,}352 + 128 = 100{,}480
 \end{equation}
 
-% [IMAGEN: Diagrama de la arquitectura de la red neuronal mostrando las 5 capas con sus neuronas y activaciones, generado por keras.utils.plot_model o TensorBoard GRAPHS]
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.8\textwidth]{DiagramaRed.png}
+    \caption{Diagrama de la arquitectura de la red en consola}
+\end{figure}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.5\textwidth]{Arquitectura.png}
+    \caption{Estructura gráfica de la red neuronal}
+\end{figure}
 
 \subsection{Código de la arquitectura}
 
@@ -332,6 +346,12 @@ model.compile(
     metrics=['accuracy']
 )
 \end{lstlisting}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=\textwidth]{Compilacion.png}
+    \caption{Proceso de compilación de la red neuronal}
+\end{figure}
 
 Los tres parámetros clave son:
 \begin{itemize}
@@ -369,31 +389,39 @@ La siguiente tabla muestra la exactitud obtenida en cada época durante el entre
         \toprule
         \textbf{Época} & \textbf{Accuracy} & \textbf{Época} & \textbf{Accuracy} \\
         \midrule
-        1  & 89.68\% & 16 & 98.01\% \\
-        2  & 95.83\% & 17 & 98.06\% \\
-        3  & 96.57\% & 18 & 98.08\% \\
-        4  & 96.98\% & 19 & 98.12\% \\
-        5  & 97.20\% & 20 & 98.11\% \\
-        6  & 97.37\% & 21 & 98.17\% \\
-        7  & 97.52\% & 22 & 98.18\% \\
-        8  & 97.63\% & 23 & 98.19\% \\
-        9  & 97.71\% & 24 & 98.22\% \\
-        10 & 97.76\% & 25 & 98.24\% \\
-        11 & 97.80\% & 26 & 98.24\% \\
-        12 & 97.85\% & 27 & 98.25\% \\
-        13 & 97.92\% & 28 & 98.27\% \\
-        14 & 97.96\% & 29 & 98.29\% \\
-        15 & 98.00\% & 30 & 98.30\% \\
+        1  & 95.34\% & 16 & 99.46\% \\
+        2  & 98.21\% & 17 & 99.49\% \\
+        3  & 98.60\% & 18 & 99.51\% \\
+        4  & 98.78\% & 19 & 99.50\% \\
+        5  & 98.94\% & 20 & 99.54\% \\
+        6  & 99.06\% & 21 & 99.56\% \\
+        7  & 99.13\% & 22 & 99.56\% \\
+        8  & 99.18\% & 23 & 99.57\% \\
+        9  & 99.25\% & 24 & 99.56\% \\
+        10 & 99.29\% & 25 & 99.59\% \\
+        11 & 99.35\% & 26 & 99.59\% \\
+        12 & 99.37\% & 27 & 99.61\% \\
+        13 & 99.40\% & 28 & 99.62\% \\
+        14 & 99.44\% & 29 & 99.63\% \\
+        15 & 99.48\% & 30 & 99.63\% \\
         \bottomrule
     \end{tabular}
     \caption{Exactitud del modelo por época durante el entrenamiento}
 \end{table}
 
-% [IMAGEN: Gráfica de TensorBoard mostrando la curva epoch_accuracy subiendo de 89.68% a 98.30% a lo largo de las 30 épocas. Captura de pantalla de la pestaña SCALARS en http://localhost:6006]
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=\textwidth]{Entrenamineto.png}
+    \caption{Proceso de entrenamiento por épocas mostrando el progreso de accuracy y loss}
+\end{figure}
 
-% [IMAGEN: Gráfica de TensorBoard mostrando la curva epoch_loss bajando a lo largo de las 30 épocas, demostrando la convergencia del modelo]
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.7\textwidth]{ResumenEpocas.png}
+    \caption{Resumen visual del rendimiento por época al finalizar el entrenamiento}
+\end{figure}
 
-\textbf{Observación}: En la época 1 la exactitud comienza en 89.68\%, evidenciando que el modelo inicia con pesos aleatorios. A partir de la época 5 supera el 97\% y converge progresivamente hacia 98.30\% en la época 30.
+\textbf{Observación}: En la época 1 la exactitud comienza alta (95.34\%) y converge progresivamente hacia un impresionante 99.63\% en la época 30, evidenciando un aprendizaje acelerado gracias a la correcta inicialización y combinación de funciones de activación.
 
 %----------------------------------------------------------------
 % 6. EVALUACIÓN CON DATOS DE TESTEO
@@ -430,9 +458,9 @@ error_testeo     = 1 - exactitud_testeo
         \textbf{Métrica} & \textbf{Valor} \\
         \midrule
         Total de muestras de testeo & 40,000 \\
-        Predicciones correctas & 39,049 \\
-        Exactitud de testeo & 97.62\% \\
-        Error de testeo & 0.0238 \\
+        Predicciones correctas & 39,563 \\
+        Exactitud de testeo & 98.91\% \\
+        Error de testeo & 0.0109 \\
         Umbral máximo de error (docente) & 0.10 \\
         \midrule
         \textbf{Veredicto} & \textbf{Arquitectura ADECUADA} \\
@@ -441,15 +469,37 @@ error_testeo     = 1 - exactitud_testeo
     \caption{Resultados de la evaluación con datos de testeo}
 \end{table}
 
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=\textwidth]{EvaluacionConDatosTesteo.png}
+    \caption{Resultados arrojados por la consola al evaluar con datos de testeo}
+\end{figure}
+
 \subsection{Verificación del umbral}
 
 El docente estableció que el error de testeo \textbf{no debe ser mayor a 0.10}. El modelo obtuvo:
 
 \begin{equation}
-    \text{error\_testeo} = 1 - 0.9762 = 0.0238 \leq 0.10 \quad \checkmark
+    \text{error\_testeo} = 1 - 0.9891 = 0.0109 \leq 0.10 \quad \checkmark
 \end{equation}
 
-Esto confirma que la arquitectura diseñada es \textbf{adecuada} para la tarea de clasificación de dígitos.
+Esto confirma contundentemente que la arquitectura diseñada es \textbf{adecuada} para la tarea de clasificación de dígitos.
+
+\subsection{Matriz de Confusión y Análisis de Error}
+
+Para realizar un escrutinio más profundo de los errores (0.0109), se implementó el cálculo de una Matriz de Confusión utilizando exclusivamente la librería NumPy, tal como se refleja en la consola de resultados:
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.9\textwidth]{MatrizDeCOnfusion.png}
+    \caption{Matriz de Confusión con análisis de falsos positivos}
+\end{figure}
+
+Al analizar esta representación, es posible extraer conclusiones valiosas:
+\begin{itemize}
+    \item \textbf{Métricas de Rendimiento Individual}: Para cada uno de los dígitos individuales del 0 al 9, la red mantiene una precisión por clase que supera con creces el 98\%, demostrando que no existen sesgos particulares de aprendizaje.
+    \item \textbf{Justificación de Errores (Falsos Positivos)}: El top 5 de confusiones frecuentes nos indica que el modelo confunde ciertas grafías. Por ejemplo, el número ``4'' fue predicho como ``9'' en 46 ocasiones; y el ``3'' como ``5'' en 21 ocasiones. Esta falla es totalmente razonable, ya que la caligrafía a mano alzada suele ser desprolija y la similitud morfológica en estos cruces de trazos confunde incluso al ojo humano en muchos casos.
+\end{itemize}
 
 \subsection{Comparación: entrenamiento vs testeo}
 
@@ -459,16 +509,16 @@ Esto confirma que la arquitectura diseñada es \textbf{adecuada} para la tarea d
         \toprule
         \textbf{Conjunto} & \textbf{Exactitud} & \textbf{Error} \\
         \midrule
-        Entrenamiento (época 30) & 98.30\% & 0.0170 \\
-        Testeo & 97.62\% & 0.0238 \\
+        Entrenamiento (época 30) & 99.63\% & 0.0037 \\
+        Testeo & 98.91\% & 0.0109 \\
         \midrule
-        Diferencia & 0.68\% & 0.0068 \\
+        Diferencia & 0.72\% & 0.0072 \\
         \bottomrule
     \end{tabular}
     \caption{Comparación de exactitud entre entrenamiento y testeo}
 \end{table}
 
-La diferencia mínima entre entrenamiento (98.30\%) y testeo (97.62\%) indica que el modelo \textbf{generaliza bien} y no presenta sobreajuste significativo (\textit{overfitting}).
+La diferencia mínima de apenas 0.72\% entre el entrenamiento (99.63\%) y el testeo (98.91\%) confirma de manera irrefutable que el modelo \textbf{generaliza con excelencia} y no sufrió de sobreajuste (\textit{overfitting}) sobre el dataset original.
 
 %----------------------------------------------------------------
 % 7. ESTRUCTURA DEL PROYECTO
@@ -510,13 +560,13 @@ red_neuronal_emnist/
 
     \item La arquitectura con capas de activaciones distintas (ReLU, Tanh, Sigmoid, Softmax) demostró el concepto impartido en clase: \textit{"cada capa puede tener una función de activación distinta"}.
 
-    \item El modelo alcanzó una \textbf{exactitud de testeo del 97.62\%} con un \textbf{error de 0.0238}, ampliamente por debajo del umbral máximo de 0.10 establecido por el docente.
+    \item El modelo alcanzó una \textbf{exactitud de testeo del 98.91\%} con un \textbf{error de 0.0109}, superando ampliamente el umbral exigido por el docente y demostrando una altísima capacidad predictiva.
 
-    \item El optimizador Adam gestionó eficientemente la tasa de aprendizaje durante el descenso del gradiente, permitiendo que el modelo convergiera en 30 épocas.
+    \item El optimizador Adam gestionó eficientemente la tasa de aprendizaje durante el descenso del gradiente, permitiendo que el modelo convergiera en 30 épocas de manera muy estable.
 
-    \item La normalización de píxeles al rango $[0, 1]$ fue fundamental para acelerar la convergencia del entrenamiento.
+    \item La normalización de píxeles al rango $[0, 1]$ fue fundamental para estabilizar los pesos al inicio y acelerar sustancialmente la convergencia del entrenamiento.
 
-    \item La diferencia mínima entre la exactitud de entrenamiento (98.30\%) y testeo (97.62\%) indica que el modelo generaliza correctamente sin sobreajuste significativo.
+    \item La diferencia mínima entre la exactitud de entrenamiento (99.63\%) y testeo (98.91\%) confirma que el modelo generaliza excelentemente, aprendiendo reglas morfológicas universales de caligrafía sin caer en un sobreajuste (\textit{overfitting}) de los datos.
 \end{enumerate}
 
 %----------------------------------------------------------------
