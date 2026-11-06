@@ -1,0 +1,97 @@
+# ==========================================
+# Byte-compiled / optimized / DLL files
+# ==========================================
+__pycache__/
+*.py[cod]
+*$py.class
+*.pyc
+
+# C extensions
+*.so
+
+# ==========================================
+# Distribution / packaging
+# ==========================================
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+share/python-wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+
+# ==========================================
+# Virtual Environments
+# ==========================================
+venv/
+.venv/
+env/
+ENV/
+env.bak/
+venv.bak/
+
+# ==========================================
+# Environment variables, secrets and keys
+# ==========================================
+.env
+.env.*
+!.env.example
+*.env
+secrets/
+*.pem
+*.key
+*.pfx
+
+# ==========================================
+# Datasets and compressed archive files
+# ==========================================
+data/
+datasets/
+*.csv
+*.tsv
+*.zip
+*.tar
+*.tar.gz
+*.tgz
+*.rar
+*.7z
+
+# ==========================================
+# Logs, checkpoints, and outputs
+# ==========================================
+logs/
+*.log
+tensorboard_logs/
+*.h5
+*.keras
+*.ckpt
+*.pb
+
+# ==========================================
+# IDE and Editor configurations
+# ==========================================
+.vscode/
+.idea/
+*.sublime-project
+*.sublime-workspace
+*.swp
+*.swo
+
+# ==========================================
+# Operating System temporary files
+# ==========================================
+.DS_Store
+Thumbs.db
+Desktop.ini
+*.tmp
+*.bak
