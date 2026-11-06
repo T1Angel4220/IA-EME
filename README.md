@@ -217,25 +217,3 @@ tensorboard --logdir=logs/fit
 Abre tu navegador en `http://localhost:6006` para explorar las gráficas interactivas.
 
 ---
-
-## 🛡 Buenas Prácticas Aplicadas
-
-- **Zero Secrets / Zero Bloat:** Cero credenciales, rutas absolutas o secretos en el historial de Git. Datasets pesados (`*.csv`) y carpetas temporales (`logs/`, `__pycache__/`) ignorados preventivamente.
-- **Código Modular y Reutilizable:** Arquitectura desacoplada en submódulos especializados.
-- **Resiliencia de Rutas:** Resolución dinámica de directorios (`Path.resolve()`) compatible tanto con Windows como con Unix/macOS.
-- **Documentación Completa:** Docstrings descriptivos y configuración tipada.
-
----
-
-## 👤 Autor
-
-Desarrollado por **Ángel Ayuquina**  
-- **GitHub:** [@T1Angel4220](https://github.com/T1Angel4220)  
-- **Enfoque:** Inteligencia Artificial, Deep Learning y Arquitectura de Software.
-
----
-
-## 📄 Licencia
-
-Este proyecto se distribuye bajo los términos de la licencia [MIT](LICENSE).
-
