@@ -1,0 +1,7 @@
+# Core Deep Learning & Scientific Computing
+numpy>=1.23.0
+tensorflow>=2.10.0
+
+# Optional Visualizations & Graph Export
+pydot>=1.4.2
+graphviz>=0.20.1
