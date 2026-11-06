@@ -1,9 +1,20 @@
+import os
+import sys
+from pathlib import Path
+
+# Configurar sys.path para soportar ejecucion tanto desde la raiz del repositorio como desde red_neuronal_emnist/
+CURRENT_DIR = Path(__file__).resolve().parent
+if str(CURRENT_DIR) not in sys.path:
+    sys.path.insert(0, str(CURRENT_DIR))
+
 # pyrefly: ignore [missing-import]
 import numpy as np
 import tensorflow as tf
-
 from tensorflow import keras
 
+print("=" * 50)
+print("  INICIALIZACION DEL ENTORNO")
+print("=" * 50)
 print(f"TensorFlow : {tf.__version__}")
 print(f"Keras      : {keras.__version__}")
 print(f"NumPy      : {np.__version__}")
