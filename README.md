@@ -238,3 +238,4 @@ Desarrollado por **Ángel Ayuquina**
 ## 📄 Licencia
 
 Este proyecto se distribuye bajo los términos de la licencia [MIT](LICENSE).
+
